@@ -100,7 +100,10 @@ void goodByeMessage(){
   exit(1);
 }
 
-void menuInterface(){
+int main(){
+  vector<Employee> listGeneralEmployees;
+  vector<HumanResourceEmployee> listHREmployees;
+
   system("clear");
   printHorizontalLine();
   printHorizontalLine(1);
@@ -152,13 +155,23 @@ void menuInterface(){
       cin >> userId;
       cout << "Password: ";
       cin >> userPassword;
-      vector<HumanResourceEmployee> listHREmployees;
+      
       HumanResourceEmployee *defaultEmployee = new HumanResourceEmployee();
       if(userId == defaultEmployee->getUserId() && userPassword == defaultEmployee->getPassword()){
         listHREmployees.push_back(*defaultEmployee);
+        delete(defaultEmployee);
         cout << "success! User logged in" << endl;
         cout << "Is the vector empty? " << listHREmployees.empty() << endl;
         cout << "Size of vector: " << listHREmployees.size() << endl;
+        defaultEmployee = new HumanResourceEmployee("Andree","Vazquez","new user","01234");
+        listHREmployees.push_back(*defaultEmployee);
+        HumanResourceEmployee *employee = new HumanResourceEmployee();
+        *employee = listHREmployees.at(1);
+        cout << "Getting the view function: " << employee->getUserId() << endl;
+        cout << "Is the vector empty? " << listHREmployees.empty() << endl;
+        cout << "Size of vector: " << listHREmployees.size() << endl;
+        delete(employee);
+        delete(defaultEmployee);
       }else{
         cout << "Incorrect login!" << endl;
 
@@ -169,11 +182,6 @@ void menuInterface(){
     }
   }
   goodByeMessage();
-}
-
-int main(){
-  //HumanResourceEmployee *defaultEmployee = new HumanResourceEmployee();
-  menuInterface();
   //cout << "- Default HR Employee user id: zbdt4n" << endl;
   //cout << "- Default HR Employee password: studycom" << endl;
   
