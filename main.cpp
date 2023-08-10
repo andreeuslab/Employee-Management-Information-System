@@ -32,6 +32,9 @@ class Employee{
       password = tempPassword;
       department = "General Employee";
     }
+    void setDepartment(string tDepartment){
+      department = tDepartment;
+    }
     void viewEmployeeFile(){
       cout << "Name: " << firstName << " " << lastName << endl;
       cout << "User Id: " << userId << endl;
@@ -62,22 +65,32 @@ class HumanResourceEmployee: public Employee{
       password = tempPassword;
       department = "Human Resource Employee";
     }
-    void addEmployeeFile();
-    void viewEmployeeFile(){
-      cout << "Name: " << firstName << " " << lastName << endl;
-      cout << "User Id: " << userId << endl;
-      cout << "Department: " << department << endl;
+    string getFullName(){
+      return firstName + " " + lastName;
     }
-    void searchEmployeeFile();
-    void modifyEmployeeFile();
-    void deleteEmployeeFile();
-  
     string getUserId(){
       return userId;
     }
     string getPassword(){
       return password;
     }
+    string getDepartment(){
+      return "Human Resources Employee";
+    }
+
+    void viewEmployeeFile(){
+      cout << "Name: " << getFullName() << endl;
+      cout << "User Id: " << getUserId() << endl;
+      cout << "Department: " << getDepartment() << endl;
+    }
+    void searchEmployeeFile();
+    void modifyEmployeeFile(string tFirstName, string tLastName, string tUserId, string tPassword){
+
+    }
+    void deleteEmployeeFile(){
+      //determine which user to delete, then determine its index location, then delete between there and there. 
+    }
+  
 };
 void printHorizontalLine(void){
   // 1 byte, when casted to int(2) = 50, decimal based on ASCII
@@ -167,7 +180,8 @@ int main(){
         listHREmployees.push_back(*defaultEmployee);
         HumanResourceEmployee *employee = new HumanResourceEmployee();
         *employee = listHREmployees.at(1);
-        cout << "Getting the view function: " << employee->getUserId() << endl;
+        cout << "Getting the view function: "; 
+        employee->viewEmployeeFile();
         cout << "Is the vector empty? " << listHREmployees.empty() << endl;
         cout << "Size of vector: " << listHREmployees.size() << endl;
         delete(employee);
