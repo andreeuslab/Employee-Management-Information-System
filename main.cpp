@@ -9,10 +9,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <limits>
 
 using namespace std;
 
-const char screenWidth = 'U';
+const char screenWidth = 'U'; // Setting width of screen, char U = decimal (85)
+const unsigned short MAXSIZE = 12;
 
 class Employee{
     private:
@@ -21,8 +23,8 @@ class Employee{
         string userId;
         string password;
         string department;
+
     public:
-        Employee(): firstName(""),lastName(""),userId(""),password(""),department(""){}
         Employee(string tFirstName, string tLastName, string tUserId, string tPass, int depId){
             firstName = tFirstName;
             lastName = tLastName;
@@ -31,7 +33,6 @@ class Employee{
             department = setDepartmentByClassId(depId);
         }
 
-        // Action Methods
         void view(){
             cout << "+\tEmployee " << endl;
             cout << "+\tName: " + firstName + " " + lastName << endl;
@@ -39,8 +40,7 @@ class Employee{
             cout << "+\tDepartment: " + department << endl;
         }
         
-
-        // Setters Methods
+        // Setters Methods for initializing private member variables.
         void setFirstName(string tFirstName){
             firstName = tFirstName;
         }
@@ -61,7 +61,7 @@ class Employee{
             department = tDepartment;
         }
 
-        // Getter Methods
+        // Getter Methods for accessing private member variables.
         string getDepartmentClassification(){
             return department;
         }
@@ -84,22 +84,24 @@ class Employee{
         }
 };
 
+// Printing Horizontal Line for Menu Display
 void printHorizontalLine(bool truth){
-  // 1 byte, when casted to int(2) = 50, decimal based on ASCII
-  cout << "+";
-  if(truth){
-    // print Horizontal line with spaces
-    for(int i =0; i<int(screenWidth); i++){
-        cout << " ";
+    cout << "+";
+    if(truth){
+        // print Horizontal line with spaces
+        for(int i =0; i<int(screenWidth); i++){
+            cout << " ";
+        }
+    }else{
+        // print Horizontal Line without spaces
+        for(int i=0; i<int(screenWidth); i++){
+            cout << "*";
+        }
     }
-  }else{
-      for(int i=0; i<int(screenWidth); i++){
-        cout << "*";
-    }
-  }
     cout << "+" << endl;
 }
 
+// Retrieve index of a specific Vector Element
 int getIndexOfVector(vector<Employee> employees, string tempId){
     int temporaryIndex;
     for(vector<int>::size_type i =0; i<employees.size(); i++){
@@ -107,36 +109,62 @@ int getIndexOfVector(vector<Employee> employees, string tempId){
     }
     return temporaryIndex;
 }
-string inputStringCheck(int max_size){
+
+// Checking String for character size
+string inputSingleStringCheck(){
     string userInput;
     cin >> userInput;
+
     //testing for single character string
-    if(max_size == userInput.length() && (userInput[0] > 64 && userInput[0] < 123)){ 
-        return userInput;
-    }
-    if(userInput.length() <= max_size){
-        for(int i =0; i<userInput.length();i++){
-            if(userInput[i] > 64 && userInput[i] < 123){
-                return userInput;
-            }
-        }
-    }
-    return " Incorrect Input, try again!";
+    if(1 == userInput.length() && (userInput[0] > 64 && userInput[0] < 123)) return userInput;
+    return userInput;
 }
+
+bool goodLongStringCheck(){
+    int max_size = 12;
+
+    string input;
+    cin >> input;
+
+    return 0;
+}
+
+// Return TRUE or FALSE if user profile is contained within vector and if variables match vector elements
 bool verifyProfile(vector<Employee> employees, string userId, string userPassword){
     for(vector<int>::size_type i =0; i<employees.size(); i++){
         if(userId == employees[i].getUserId() && userPassword == employees[i].getPassword()) return 1;
     }
     return 0;
 }
-bool checkIntegerInput(int option){
-    if(!(cin)){
-        cin.clear();
-        cin.ignore(1000,'\n');
-        return 0;
+
+bool idExists(vector<Employee> &employees, string tempId){
+    for(vector<int>::size_type i = 0; i<employees.size();i++){
+        if(tempId == employees.at(i).getUserId()) return 1;
     }
-    return 1;
+    return 0;
 }
+
+int getValidIntegerInput(){
+    int input = 0;
+    bool failedInput = true;
+ 
+    do{
+        cout << "\tEnter a Numeric Choice: ";
+        cin >> input;
+ 
+        if(!cin.fail()){
+            failedInput = false;
+        }else{
+            cin.clear();
+            cin.ignore(1000,'\n');
+            cout << "\tIncorrect input, numeric value between 0-9 only." << endl;
+        }
+    }while(failedInput); // If cin.fail, meaning its not an integer, it will as again. If integer then it will stop loop.
+    
+    return input;
+}
+
+// Exit Application message
 void goodByeMessage(string msg){
   system("clear");
   printHorizontalLine(0);
@@ -150,20 +178,27 @@ void goodByeMessage(string msg){
   printHorizontalLine(0);
   exit(1);
 }
+string testing(){
+    int maxsize = 12;
+    string sample;
+    cin >> sample;
+    if(sample.length()>maxsize){
 
+    }
+}
 int main(){
+    // Initializing the Vector Storage along with 1x usable employee file.
     vector<Employee> employees;
     Employee *newEmployee = new Employee("Jonathan","Vazquez","zbdt4n","studycom",0);
     employees.push_back(*newEmployee);
     delete newEmployee;
-    int vIndex;
-    
-    bool runapp = true;
-    string pauseButton;
 
+    bool runapp = true;
+    string pauseButton; // pausing screen in place to allow user to read message.
     string inputValidated;
     do{
         system("clear");
+
         printHorizontalLine(0);
         printHorizontalLine(1);
         cout << "+\t\tJVs Better Software LLC" << endl;
@@ -177,107 +212,171 @@ int main(){
         cout << "\tNext screen, enter n: " << endl;
         cout << "\tExit Application, enter x" << endl;
         cout << "\tEntry: ";
-        inputValidated = inputStringCheck(1);
-        if(inputValidated == "x"){
+        
+        // Checking if user entry is of string and if its 1 character as instructed.
+        do{
+            inputValidated = inputSingleStringCheck();
+        }while(inputValidated.length() != 1);
+
+        // Exit Application if choice matches.
+        if(inputValidated == "x")
             goodByeMessage("Exiting Application!");
-        }
+
     }while(inputValidated != "n");
 
     while(runapp){
         string userId, userPassword, strValidation;
-        int tries = 0;    
+        int tries = 0; 
+           
         do{
             system("clear");
+            
             printHorizontalLine(0);
             printHorizontalLine(1);
+            
             cout << "+\tPurpose: Track all employees within the Better Software LLC Business" << endl;
+            
             printHorizontalLine(1);
             printHorizontalLine(0);
             printHorizontalLine(1);
+            
             cout << "+\tProgram Rules" << endl;
             cout << "+\t1. Submit 1 single file, hence no read/write to file, dynamic creation." << endl;
             cout << "+\t2. You are responsible for adding/manipulating other employees at runtime!" << endl;
-            cout << "+\t3. Default HR Sample Users [User Id, Password] -> [zbdt4n, studycom]" << "+" << endl;
+            cout << "+\t3. Default HR Sample Users [User Id, Password] -> [zbdt4n, studycom]" << "+" << endl<<endl;
+            
+            printHorizontalLine(1);
+            
             cout << "+\tNote: If this is your 2nd run, you can try another employee identification." << "+" << endl;            
+            
             printHorizontalLine(1);
             printHorizontalLine(0);
-            cout << "User Identification Login: ";
-            userId = inputStringCheck(12);
-            cout << "User Password Login: ";
-            userPassword = inputStringCheck(12);
+            
+            do{
+                cout << "User Identification Login: ";
+                cin >> ws >> userId;
+                if(userId.length() >= MAXSIZE) cout << "Incorrect Size!" << endl;
+            }while(userId.length() >= MAXSIZE);
+
+            do{
+                cout << "User Password Login: ";
+                cin >> ws >> userPassword;
+                if(userPassword.length() >= MAXSIZE) cout << "Incorrect Size!" << endl;
+            }while(userPassword.length() >= MAXSIZE);
+            
+            // If user enters profile information more than 5 times, boot them out. Prevent bruteforce entries.
             tries++;
             if(tries>5) goodByeMessage("You've exceeded the maximum amount of tries for credential verification!");
+
         }while(!verifyProfile(employees,userId,userPassword));
 
         bool logout = false;
         bool loggedIn = true;
+        int vIndex = getIndexOfVector(employees, userId);;
+        
         while(loggedIn){
-            vIndex = getIndexOfVector(employees, userId);
+            
             int option;
+            
+            
             if((employees.at(vIndex).getDepartmentByClassId() == 0)){
                 while(!logout){
                     system("clear");
+
                     printHorizontalLine(0);
                     printHorizontalLine(1);
+                    
                     cout << "+\t\tJVs Better Software LLC Employee Portal" << endl;
                     cout << "+\t\tDepartment Identification: " << employees.at(vIndex).getDepartmentClassification() << endl;
                     cout << "+\t\tWelcome " + employees.at(vIndex).getFullName() << endl; 
+                   
                     printHorizontalLine(1);
                     printHorizontalLine(0);
                     printHorizontalLine(1);
 
-                    cout << "+\t\tWhat would you like to do?\t\t" << endl;
-                    cout << "+\t\t1. Would you like to view own personal file?\t\t" << endl;
-                    cout << "+\t\t2. Would you like to add new employee to database?" << endl;
-                    cout << "+\t\t3. Would you like to search for a specific employee file?" << endl;
-                    cout << "+\t\t4. Would you like to modify a specific employee file?" << endl;
-                    cout << "+\t\t5. Would you like to delete a specific employee file?" << endl;
-                    cout << "+\t\t6. logout?" << endl;
+                    cout << "+\tWhat would you like to do?\t\t" << endl;
+                    cout << "+\t1. Would you like to view own personal file?\t\t" << endl;
+                    cout << "+\t2. Would you like to add new employee to database?" << endl;
+                    cout << "+\t3. Would you like to search for a specific employee file?" << endl;
+                    cout << "+\t4. Would you like to modify a specific employee file?" << endl;
+                    cout << "+\t5. Would you like to delete a specific employee file?" << endl;
+                    cout << "+\t6. logout from user" << endl;
+                    cout << "+\t7. Quit Application" << endl;
+                    
                     printHorizontalLine(1);
                     printHorizontalLine(0);
+                    
                     do{
-                        cout << "\tEnter your integer choice: ";
-                        cin >> option;
-                    }while(!checkIntegerInput(option));
+                        option = getValidIntegerInput();
+                    }while(option < 1 || option > 7); // 1 <= option <= 7
                     
                     system("clear");
+                    
                     switch(option){
                         case 1:{
                             printHorizontalLine(0);
                             printHorizontalLine(1);
+                            
                             cout << "+\tView Personal Employee File!" << endl;
                             employees.at(vIndex).view(); 
+                            
                             printHorizontalLine(1);
                             printHorizontalLine(0);
+                            
                             cout << "\tEnter next screen: ";
-                            cout << inputStringCheck(1) << endl;               
+                            do{
+                                inputValidated = inputSingleStringCheck();
+                            }while(inputValidated.length() != 1);
+
+                            
                             break;
                         }
                         case 2:{
                             string firstName, lastName, userId, password;
                             int departmentId;
+                            
                             printHorizontalLine(0);
                             printHorizontalLine(1);
+                            
                             cout << "+\tAdding new employee member to database!" << endl;
                             cout << "+\tEntering personal information for new employee ..." << endl;
-                            cout << "+\tEnter new employee first name: ";
-                            firstName = inputStringCheck(12);
-                            cout << "+\tEnter new employee last name: ";
-                            lastName = inputStringCheck(12);
-                            cout << "+\tEnter new employee custom user identification: ";
-                            userId = inputStringCheck(12);
+                            
+                            do{
+                                cout << "+\tEnter new employee first name: ";
+                                getline(cin>>ws,firstName);
+                            }while(firstName.length() >= MAXSIZE);
+                            
+                            cin.clear(); // clearing cin buffer 
+                            cin.ignore(numeric_limits<streamsize>::max(),'\n'); // clearing everything up new line.
+                            cout << "What is the variable firstName: " << firstName << endl;
+                            
+                            do{
+                                cout << "+\tEnter new employee last name: ";
+                                getline(cin>>ws,lastName, ' ');
+                            }while(lastName.length() >= MAXSIZE);
+                            cin.clear(); // clearing cin buffer 
+                            cin.ignore(numeric_limits<streamsize>::max(),'\n'); // clearing everything up new line.
+                            
+                            cout << "What is the variable lastName: " << lastName << endl;
+
+                            // check that userId is not the same as already stored, UNIQUE.
+                            do{
+                                cout << "+\tEnter new employee user identification name: ";
+                                getline(cin>>ws,userId);
+                                cin.clear();
+                                cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                            }while(idExists(employees, userId));    
+
                             password = "studycom";
                             cout << "+\tNew employee default password set to: " + password << endl;
-                            cout << "+\tDepartment Identification integer: 0 {HR}, 1 {Management}, any other int {General Employee}" << endl;
+                            cout << "+\tDepartment Identification integer: 0 {HR}, 1 {Management}, 2 {General Employee}" << endl;
                             do{
-                                cout << "+\tEnter your integer choice: ";
-                                cin >> departmentId;
-                            }while(!checkIntegerInput(departmentId));
+                                departmentId = getValidIntegerInput();
+                            }while(departmentId > 2 || departmentId < 0); // 0 <= departmentId <= 2
 
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                             printHorizontalLine(1);
-                            
                 
                             Employee *newEmp = new Employee(firstName,lastName,userId,password,departmentId);
                             employees.push_back(*newEmp);
@@ -287,92 +386,126 @@ int main(){
                             printHorizontalLine(1);
                             printHorizontalLine(0);
 
-                            cout << "\tEnter next screen: ";
-                            pauseButton = inputStringCheck(12);
+                            cout << "\tEnter any single character to move to next screen: ";
+                            do{ 
+                                inputValidated = inputSingleStringCheck();
+                            }while(inputValidated.length() != 1);
+                            
                             break;
                         }
                         case 3:{
-                            int employeeIndex;
+                            unsigned int employeeIndex;
+                            
                             printHorizontalLine(0);
                             printHorizontalLine(1);
+                            
                             cout << "+\tSearching Employee file" << endl;
                             cout << "+\tHere are all the current employees by Name: " << endl;
+                            
                             for(vector<int>::size_type i =0; i<employees.size(); i++){
                                 cout << "+\t" << i << ". ";
                                 cout << employees.at(i).getFullName() << endl;
                             }
+                            
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                             printHorizontalLine(1);
                     
                             cout << "+\tInterested in viewing any specific employee file?" << endl;
+                            
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                 
                             do{
-                                cout << "Enter your integer choice: ";
-                                cin >> employeeIndex;
-                            }while(!checkIntegerInput(employeeIndex));
-
-                            if((vector<int>::value_type)employeeIndex > employees.size()){
-                                cout << "Incorrect entry!" << endl;
-                            }
+                                employeeIndex = getValidIntegerInput();
+                            }while(employeeIndex < 0 || employeeIndex >= employees.size()); // 0 < employeeIndex <= employees.size()
+                            
                             system("clear");
+                            
                             printHorizontalLine(0);
                             printHorizontalLine(1);
+                            
                             employees.at(employeeIndex).view();
+                            
                             printHorizontalLine(1);
                             printHorizontalLine(0);
-                            cout << "\tEnter any character for next screen: ";
-                            pauseButton = inputStringCheck(12);
+                            
+                            cout << "\tEnter any single character for next screen: ";
+                            do{ 
+                                inputValidated = inputSingleStringCheck();
+                            }while(inputValidated.length() != 1);
+                            
                             break;
                         }
                         case 4:{
-                            int employeeIndex;
+                            unsigned int employeeIndex;
                             int modifyOption;
+                            string userInput;
+                            
                             printHorizontalLine(0);
                             printHorizontalLine(1);
+                            
                             cout << "+\tModifying Employee File!" << endl;
                             cout << "+\tHere are all the current employees by Name: " << endl;
+                            
                             for(vector<int>::size_type i =0; i<employees.size(); i++){
                                 cout << "+\t" << i << ". ";
                                 cout << employees.at(i).getFullName() << endl;
                             }
+                            
                             printHorizontalLine(0);
                             printHorizontalLine(1);
                             printHorizontalLine(1);
+                            
                             cout << "+\tInterested in viewing any specific employee file?" << endl;
+                            
+                            printHorizontalLine(0);
+                            printHorizontalLine(1);
+
+                            cout << "+\tWould you like to modify an account?" << endl;// Continue or exit? 
+                            cout << "+\t y - yes || n - no:\t";
+                            
+                            // If user did not entered a single character, loop will continue to ask.
+                            do{ 
+                                userInput = inputSingleStringCheck();
+                            }while(userInput.length() != 1);
+
+                            if(userInput != "y"){
+                                system("clear");
+                                break;
+                            }
+
+                            printHorizontalLine(1);
                             printHorizontalLine(0);
                             printHorizontalLine(1);
 
                             do{
-                                cout << "\tEnter your integer choice: ";
-                                cin >> employeeIndex;
-                            }while(!checkIntegerInput(employeeIndex));
-
-                            if((vector<int>::value_type)employeeIndex > employees.size()){
-                                cout << "Incorrect entry!" << endl;
-                            }
-                            // Continue or exit? 
+                                employeeIndex = getValidIntegerInput();
+                            }while(employeeIndex < 0 || employeeIndex >= employees.size()); // 0 < employeeIndex <= employees.size()
+                             
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                             printHorizontalLine(1);
+                            
                             employees.at(employeeIndex).view();
+                            
                             printHorizontalLine(1);
-                            string firstName, lastName, userId, password, department;
+                            
+                            string firstName, lastName, userId, password;
+                            int departmentId;
                             cout << "+\t1. Modify First Name" << endl;
                             cout << "+\t2. Modify Last Name" << endl;
                             cout << "+\t3. Modify User Identification" << endl;
                             cout << "+\t4. Modify Password" << endl;
                             cout << "+\t5. Modify Department" << endl;
+                            
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                             printHorizontalLine(1);
                             
                             do{
-                                cout << "Enter your integer choice: ";
-                                cin >> modifyOption;
-                            }while(!checkIntegerInput(modifyOption));
+                                modifyOption = getValidIntegerInput();
+                            }while(modifyOption > 5 || modifyOption < 1); // 1 <= modifyOption <= 5
                             
                             printHorizontalLine(1);
                             printHorizontalLine(0);
@@ -380,74 +513,114 @@ int main(){
                             
                             if(modifyOption == 1){
                                 cout << "+\tEnter new employee first name: ";
-                                firstName = inputStringCheck(12);
+                                //firstName = inputStringCheck(12);
                                 employees.at(employeeIndex).setFirstName(firstName);
                             }else if(modifyOption == 2){
                                 cout << "+\tEnter new employee last name: ";
-                                lastName = inputStringCheck(12);
+                                //lastName = inputStringCheck(12);
                                 employees.at(employeeIndex).setLastName(lastName);
                             }else if(modifyOption == 3){
                                 cout << "+\tEnter new employee custom user identification: ";
-                                userId = inputStringCheck(12);
+                                //userId = inputStringCheck(12);
                                 employees.at(employeeIndex).setUserId(userId);
                             }else if(modifyOption == 4){
                                 cout << "+\tEnter new employee password: ";
-                                password = inputStringCheck(12);
+                                //password = inputStringCheck(12);
                                 employees.at(employeeIndex).setPassword(password);
                             }else if(modifyOption == 5){
-                                cout << "+\tEnter new employee department: \n\t[0]->Human resources\n\t[1]->Management\n\t[#]->General Employee";
-                                department = inputStringCheck(12);
-                                employees.at(employeeIndex).setDepartmentByTitle(department); // careful that user enters correctly
+                                if(employeeIndex == 0){
+                                    system("clear");
+                                
+                                    printHorizontalLine(0);
+                                    printHorizontalLine(1);
+                                
+                                    cout << "+\tYou may not modify this account!" << endl;     
+                                
+                                    printHorizontalLine(1);
+                                    printHorizontalLine(0);
+                                }else{  
+                                    cout << "+\tEnter new employee department: \n\t[0]->Human resources\n\t[1]->Management\n\t[2]->General Employee";
+                                    do{
+                                        departmentId = getValidIntegerInput();
+                                    }while(employeeIndex < 0 || departmentId > 2); // 0 < departmentId < 2 
+                                    employees.at(employeeIndex).setDepartmentByClassId(departmentId); 
+                                }
                             }else{
                                 cout << "+\tNo modification made" << endl;    
                             }
+                            
                             printHorizontalLine(1);
                             printHorizontalLine(0);
 
-                            // Need to loop to determine if user wants to proceed with further modification or quit.
+                            cout << "\tEnter any single character to next screen: ";
+                            do{ 
+                                inputValidated = inputSingleStringCheck();
+                            }while(inputValidated.length() != 1);
 
-                            cout << "\tEnter next screen: ";
-                            pauseButton = inputStringCheck(12);
                             system("clear");
+                            
                             break;
                         }
                         case 5:{
-                            int employeeIndex;
+                            unsigned int employeeIndex;
+                            
                             printHorizontalLine(0);
                             printHorizontalLine(1);
+                            
                             cout << "+\tDeleting employee from database!" << endl;
                             cout << "+\tHere are all the current employees by Name: " << endl;
+                            
                             for(vector<int>::size_type i =0; i<employees.size(); i++){
                                 cout << "+\t" << i << ". ";
                                 cout << employees.at(i).getFullName() << endl;
                             }
+                            
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                             
                             do{
-                                cout << "Enter your integer choice: ";        
-                                cin >> employeeIndex;
-                            }while(!checkIntegerInput(employeeIndex));
+                                employeeIndex = getValidIntegerInput();
+                            }while(employeeIndex >= employees.size() || employeeIndex < 0); // 0 < employeeIndex <= employees.size()
 
-                            employees.erase(employees.begin()+employeeIndex);
-                            printHorizontalLine(0);
-                            printHorizontalLine(1);
+                            if(employees.size() == 1 || employeeIndex == 0 || employees.at(employeeIndex).getUserId() == userId){
+                                system("clear");
                             
-                            cout << "+\tUpdated List of Employees: " << endl;
-                            for(vector<int>::size_type i =0; i<employees.size(); i++){
-                                cout << "+\t" << i << ". ";
-                                cout << employees.at(i).getFullName() << endl;
+                                printHorizontalLine(0);
+                                printHorizontalLine(1);
+                            
+                                cout << "+\tYou may not delete this account!" << endl;     
+                            
+                                printHorizontalLine(1);
+                                printHorizontalLine(0);
+                            }else{
+                            
+                                employees.erase(employees.begin()+employeeIndex);
+                                
+                                printHorizontalLine(0);
+                                printHorizontalLine(1);
+                                
+                                cout << "+\tUpdated List of Employees: " << endl;
+                                for(vector<int>::size_type i =0; i<employees.size(); i++){
+                                    cout << "+\t" << i << ". ";
+                                    cout << employees.at(i).getFullName() << endl;
+                                }
+                                
+                                printHorizontalLine(1);
+                                printHorizontalLine(0);
                             }
-                            printHorizontalLine(1);
-                            printHorizontalLine(0);
-                            cout << "\tEnter next screen: ";
-                            pauseButton = inputStringCheck(12);
+                            cout << "\tEnter a single character for next screen: ";
+                            do{ 
+                                inputValidated = inputSingleStringCheck();
+                            }while(inputValidated.length() != 1);
                             system("clear");
                             break;
                         }
-                        default:{
+                        case 6:{
                             logout = true;
                             break;
+                        }
+                        default:{
+                            goodByeMessage("Exiting Application ... ");
                         }
                     }
                 }
@@ -455,8 +628,10 @@ int main(){
             }else if(employees.at(vIndex).getDepartmentByClassId() == 1){
                 while(!logout){
                     system("clear");
+                    
                     printHorizontalLine(0);
                     printHorizontalLine(1);
+                    
                     cout << "+\tWhat would you like to do ";
                     cout << employees.at(vIndex).getFullName() << endl;
 
@@ -466,85 +641,124 @@ int main(){
 
                     cout << "+\t1. Would you like to view own personal file?" << endl;
                     cout << "+\t2. Would you like to search for a specific employee file?" << endl;
-                    cout << "+\t#. Logout" << endl;
+                    cout << "+\t3. logout from user" << endl;
+                    cout << "+\t4. Quit Application" << endl;
+                    
                     printHorizontalLine(1);
                     printHorizontalLine(0);
+                    
                     do{
-                        cout << "\tEnter your integer choice: ";
-                        cin >> option;
-                    }while(!checkIntegerInput(option));
+                        option = getValidIntegerInput();
+                    }while(option > 4 || option < 1); //  1 <= option <= 4
                     
                     switch(option){
                         case 1:{
                             system("clear");
+                    
                             printHorizontalLine(0);
                             printHorizontalLine(1);
+                    
                             cout << "+\tView Personal Employee File!" << endl;
                             employees.at(vIndex).view(); 
+                    
                             printHorizontalLine(1);
                             printHorizontalLine(0);
-                            cout << "\tEnter next screen: ";
-                            cout << inputStringCheck(1) << endl;               
+                    
+                            cout << "\tEnter single character for next screen: ";
+                            do{ 
+                                inputValidated = inputSingleStringCheck();
+                            }while(inputValidated.length() != 1);               
+                    
                             break;
                         }
                         case 2:{
-                            int employeeIndex;
-                            system("clear");
+                            unsigned int employeeIndex;
+                            
                             printHorizontalLine(0);
                             printHorizontalLine(1);
-                            cout << "+\t Searching Employee file" << endl;
+                            
+                            cout << "+\tSearching Employee file" << endl;
                             cout << "+\tHere are all the current employees by Name: " << endl;
+                            
                             for(vector<int>::size_type i =0; i<employees.size(); i++){
                                 cout << "+\t" << i << ". ";
                                 cout << employees.at(i).getFullName() << endl;
                             }
+                            
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                             printHorizontalLine(1);
                     
                             cout << "+\tInterested in viewing any specific employee file?" << endl;
+                            
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                 
                             do{
-                                cout << "Enter your integer choice: ";
-                                cin >> employeeIndex;
-                            }while(!checkIntegerInput(employeeIndex));
-
-                            if((vector<int>::value_type)employeeIndex > employees.size()){
-                                cout << "Incorrect entry!" << endl;
-                            }
+                                employeeIndex = getValidIntegerInput();
+                            }while(employeeIndex < 0 || employeeIndex >= employees.size()); // 0 < employeeIndex <= employees.size()
+                            
                             system("clear");
+                            
                             printHorizontalLine(0);
                             printHorizontalLine(1);
+                            
                             employees.at(employeeIndex).view();
+                            
                             printHorizontalLine(1);
                             printHorizontalLine(0);
-                            cout << "\tEnter any character for next screen: ";
-                            pauseButton = inputStringCheck(12);
+                            
+                            cout << "\tEnter any single character for next screen: ";
+                            do{ 
+                                inputValidated = inputSingleStringCheck();
+                            }while(inputValidated.length() != 1);
+                            
+                            break;
+                        }
+                        case 3:{
+                            logout = true;
                             break;
                         }
                         default:{
-                            logout = true;
-                            break;
+                            goodByeMessage("Exiting Application");
                         }
                     }
                 }
             // General Employee Profile
             }else{
                 system("clear");
+                
+                int userInput;
+                
                 printHorizontalLine(0);
                 printHorizontalLine(1);
+                
                 cout << "+\tView Personal Employee File!" << endl;
                 employees.at(vIndex).view(); 
+                
                 printHorizontalLine(1);
                 printHorizontalLine(0);
-                cout << "\tEnter any character to Logout!";
-                cout << inputStringCheck(1) << endl;
-           }
+                printHorizontalLine(1);
+                
+                cout << "+\t1. Logout" << endl;
+                cout << "+\t2. Exit Application" << endl;
+                
+                printHorizontalLine(1);
+                printHorizontalLine(0);
+                
+                do{
+                    userInput = getValidIntegerInput();
+                }while(userInput > 2 || userInput < 1); //  1 <= userInput <= 4
+
+                if(userInput == 1){
+                    logout = true;
+                }else{
+                    // Any integer should terminate the application.
+                    goodByeMessage("Exiting Application ...");
+                }
+            }
             loggedIn = false;
         }
     }
-    goodByeMessage("Exiting...");
     return 0;
 }
