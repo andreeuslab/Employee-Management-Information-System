@@ -111,22 +111,20 @@ int getIndexOfVector(vector<Employee> employees, string tempId){
 }
 
 // Checking String for character size
-string inputSingleStringCheck(){
-    string userInput;
-    cin >> userInput;
-
+bool checkSingleStringCheck(string userInput){
     //testing for single character string
-    if(1 == userInput.length() && (userInput[0] > 64 && userInput[0] < 123)) return userInput;
-    return userInput;
+    if(1 == userInput.length() && (userInput[0] > 64 && userInput[0] < 123)) return true;
+    return false;
 }
-
-bool goodLongStringCheck(){
-    int max_size = 12;
-
-    string input;
-    cin >> input;
-
-    return 0;
+// Checking each individual character in a string to determine if it has invalid characters. 
+// Someone name does not need to have numbers.
+bool isStringCheck(string userInput){
+    for(unsigned int i = 0; i< userInput.length();i++){
+        if(!((userInput[i] > 64 || userInput[i] < 91) || (userInput[i] > 96 || userInput[i] < 123))){
+            return true;
+        }
+    }
+    return false;
 }
 
 // Return TRUE or FALSE if user profile is contained within vector and if variables match vector elements
@@ -137,6 +135,7 @@ bool verifyProfile(vector<Employee> employees, string userId, string userPasswor
     return 0;
 }
 
+// Determine if user Identification that has being entered during Add function of HR, is already in use, unique identifiers.
 bool idExists(vector<Employee> &employees, string tempId){
     for(vector<int>::size_type i = 0; i<employees.size();i++){
         if(tempId == employees.at(i).getUserId()) return 1;
@@ -178,14 +177,7 @@ void goodByeMessage(string msg){
   printHorizontalLine(0);
   exit(1);
 }
-string testing(){
-    int maxsize = 12;
-    string sample;
-    cin >> sample;
-    if(sample.length()>maxsize){
 
-    }
-}
 int main(){
     // Initializing the Vector Storage along with 1x usable employee file.
     vector<Employee> employees;
@@ -215,8 +207,10 @@ int main(){
         
         // Checking if user entry is of string and if its 1 character as instructed.
         do{
-            inputValidated = inputSingleStringCheck();
-        }while(inputValidated.length() != 1);
+            cin >> inputValidated;
+            if(inputValidated.length() > 1) cout << "Incorrect text, only 1 char allowed" << endl;
+
+        }while(!checkSingleStringCheck(inputValidated));
 
         // Exit Application if choice matches.
         if(inputValidated == "x")
@@ -251,16 +245,17 @@ int main(){
             
             printHorizontalLine(1);
             printHorizontalLine(0);
-            
+
             do{
                 cout << "User Identification Login: ";
-                cin >> ws >> userId;
-                if(userId.length() >= MAXSIZE) cout << "Incorrect Size!" << endl;
-            }while(userId.length() >= MAXSIZE);
+                cin >> userId;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }while(isStringCheck(userId));
 
             do{
                 cout << "User Password Login: ";
-                cin >> ws >> userPassword;
+                cin >> userPassword;
                 if(userPassword.length() >= MAXSIZE) cout << "Incorrect Size!" << endl;
             }while(userPassword.length() >= MAXSIZE);
             
@@ -323,10 +318,11 @@ int main(){
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                             
-                            cout << "\tEnter next screen: ";
                             do{
-                                inputValidated = inputSingleStringCheck();
-                            }while(inputValidated.length() != 1);
+                                cout << "\tEnter next screen: ";
+                                cin >> inputValidated;
+                                if(inputValidated.length() > 1) cout << "Incorrect text, only 1 char allowed" << endl;
+                            }while(!checkSingleStringCheck(inputValidated));
 
                             
                             break;
@@ -342,30 +338,26 @@ int main(){
                             cout << "+\tEntering personal information for new employee ..." << endl;
                             
                             do{
-                                cout << "+\tEnter new employee first name: ";
-                                getline(cin>>ws,firstName);
-                            }while(firstName.length() >= MAXSIZE);
-                            
-                            cin.clear(); // clearing cin buffer 
-                            cin.ignore(numeric_limits<streamsize>::max(),'\n'); // clearing everything up new line.
-                            cout << "What is the variable firstName: " << firstName << endl;
+                                cout << "+\tEnter first name of new employee: ";
+                                cin >> firstName;
+                                cin.clear();
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            }while(isStringCheck(firstName));
                             
                             do{
-                                cout << "+\tEnter new employee last name: ";
-                                getline(cin>>ws,lastName, ' ');
-                            }while(lastName.length() >= MAXSIZE);
-                            cin.clear(); // clearing cin buffer 
-                            cin.ignore(numeric_limits<streamsize>::max(),'\n'); // clearing everything up new line.
-                            
-                            cout << "What is the variable lastName: " << lastName << endl;
+                                cout << "+\tEnter last name of new employee: ";
+                                cin >> lastName;
+                                cin.clear();
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            }while(isStringCheck(lastName));
 
                             // check that userId is not the same as already stored, UNIQUE.
                             do{
                                 cout << "+\tEnter new employee user identification name: ";
-                                getline(cin>>ws,userId);
+                                cin >> userId;
                                 cin.clear();
                                 cin.ignore(numeric_limits<streamsize>::max(),'\n');
-                            }while(idExists(employees, userId));    
+                            }while(!idExists(employees, userId));  
 
                             password = "studycom";
                             cout << "+\tNew employee default password set to: " + password << endl;
@@ -386,10 +378,12 @@ int main(){
                             printHorizontalLine(1);
                             printHorizontalLine(0);
 
-                            cout << "\tEnter any single character to move to next screen: ";
-                            do{ 
-                                inputValidated = inputSingleStringCheck();
-                            }while(inputValidated.length() != 1);
+                            
+                            do{
+                                cout << "\tEnter any single character to move to next screen: ";
+                                cin >> inputValidated;
+                                if(inputValidated.length() > 1) cout << "Incorrect text, only 1 char allowed" << endl;
+                            }while(!checkSingleStringCheck(inputValidated));
                             
                             break;
                         }
@@ -430,10 +424,12 @@ int main(){
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                             
-                            cout << "\tEnter any single character for next screen: ";
-                            do{ 
-                                inputValidated = inputSingleStringCheck();
-                            }while(inputValidated.length() != 1);
+                            
+                            do{
+                                cout << "\tEnter any single character for next screen: ";
+                                cin >> inputValidated;
+                                if(inputValidated.length() > 1) cout << "Incorrect text, only 1 char allowed" << endl;
+                            }while(!checkSingleStringCheck(inputValidated));
                             
                             break;
                         }
@@ -466,9 +462,10 @@ int main(){
                             cout << "+\t y - yes || n - no:\t";
                             
                             // If user did not entered a single character, loop will continue to ask.
-                            do{ 
-                                userInput = inputSingleStringCheck();
-                            }while(userInput.length() != 1);
+                            do{
+                                cin >> userInput;
+                                if(userInput.length() > 1) cout << "Incorrect text, only 1 char allowed" << endl;
+                            }while(!checkSingleStringCheck(userInput));
 
                             if(userInput != "y"){
                                 system("clear");
@@ -512,21 +509,50 @@ int main(){
                             printHorizontalLine(1);
                             
                             if(modifyOption == 1){
-                                cout << "+\tEnter new employee first name: ";
-                                //firstName = inputStringCheck(12);
+                                do{
+                                    cout << "+\tEnter new employee first name: ";
+                                
+                                    cin >> firstName;
+                                    cin.clear();
+                                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                }while(isStringCheck(firstName));
+                                
                                 employees.at(employeeIndex).setFirstName(firstName);
+
                             }else if(modifyOption == 2){
-                                cout << "+\tEnter new employee last name: ";
-                                //lastName = inputStringCheck(12);
+                                do{
+                                    cout << "+\tEnter new employee last name: ";
+                                
+                                    cin >> lastName;
+                                    cin.clear();
+                                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                }while(isStringCheck(lastName));
+                                
                                 employees.at(employeeIndex).setLastName(lastName);
+
                             }else if(modifyOption == 3){
-                                cout << "+\tEnter new employee custom user identification: ";
-                                //userId = inputStringCheck(12);
+
+                                do{
+                                    cout << "+\tEnter new employee custom user identification: ";
+                               
+                                    cin >> userId;
+                                    cin.clear();
+                                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                }while(!idExists(employees,userId));
+                                
                                 employees.at(employeeIndex).setUserId(userId);
+
                             }else if(modifyOption == 4){
-                                cout << "+\tEnter new employee password: ";
-                                //password = inputStringCheck(12);
+                                do{
+                                    cout << "+\tEnter new employee password: ";
+                                
+                                    cin >> password;
+                                    cin.clear();
+                                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                }while(isStringCheck(password));
+
                                 employees.at(employeeIndex).setPassword(password);
+                                
                             }else if(modifyOption == 5){
                                 if(employeeIndex == 0){
                                     system("clear");
@@ -552,10 +578,12 @@ int main(){
                             printHorizontalLine(1);
                             printHorizontalLine(0);
 
-                            cout << "\tEnter any single character to next screen: ";
-                            do{ 
-                                inputValidated = inputSingleStringCheck();
-                            }while(inputValidated.length() != 1);
+                            
+                            do{
+                                cout << "\tEnter any single character to next screen: ";
+                                cin >> inputValidated;
+                                if(inputValidated.length() > 1) cout << "Incorrect text, only 1 char allowed" << endl;
+                            }while(!checkSingleStringCheck(inputValidated));
 
                             system("clear");
                             
@@ -608,11 +636,15 @@ int main(){
                                 printHorizontalLine(1);
                                 printHorizontalLine(0);
                             }
-                            cout << "\tEnter a single character for next screen: ";
-                            do{ 
-                                inputValidated = inputSingleStringCheck();
-                            }while(inputValidated.length() != 1);
+                            
+                            do{
+                                cout << "\tEnter a single character for next screen: ";
+                                cin >> inputValidated;
+                                if(inputValidated.length() > 1) cout << "Incorrect text, only 1 char allowed" << endl;
+                            }while(!checkSingleStringCheck(inputValidated));
+
                             system("clear");
+
                             break;
                         }
                         case 6:{
@@ -663,11 +695,12 @@ int main(){
                     
                             printHorizontalLine(1);
                             printHorizontalLine(0);
-                    
-                            cout << "\tEnter single character for next screen: ";
-                            do{ 
-                                inputValidated = inputSingleStringCheck();
-                            }while(inputValidated.length() != 1);               
+                            
+                            do{
+                                cout << "\tEnter single character for next screen: ";
+                                cin >> inputValidated;
+                                if(inputValidated.length() > 1) cout << "Incorrect text, only 1 char allowed" << endl;
+                            }while(!checkSingleStringCheck(inputValidated));              
                     
                             break;
                         }
@@ -708,10 +741,12 @@ int main(){
                             printHorizontalLine(1);
                             printHorizontalLine(0);
                             
-                            cout << "\tEnter any single character for next screen: ";
-                            do{ 
-                                inputValidated = inputSingleStringCheck();
-                            }while(inputValidated.length() != 1);
+                            
+                            do{
+                                cout << "\tEnter any single character for next screen: ";
+                                cin >> inputValidated;
+                                if(inputValidated.length() > 1) cout << "Incorrect text, only 1 char allowed" << endl;
+                            }while(!checkSingleStringCheck(inputValidated));
                             
                             break;
                         }
